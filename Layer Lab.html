@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Layer Lab</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Tajawal:wght@400;700;800&display=swap">
+<style>
+:root{--bg:#eef2f6;--surface:#fff;--ink:#14213d;--muted:#4a5878;--teal:#00a6a6;--pink:#e63e8b;--yellow:#ffc93c;--line:#d3dbe6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--surface:#18223a;--ink:#eef2f9;--muted:#a3b0cc;--line:#2c3a5c}}
+:root[data-theme="dark"]{--bg:#0f1626;--surface:#18223a;--ink:#eef2f9;--muted:#a3b0cc;--line:#2c3a5c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Tajawal","Bricolage Grotesque",system-ui,sans-serif;line-height:1.6}
+body.en{font-family:"Bricolage Grotesque","Tajawal",system-ui,sans-serif}
+[hidden]{display:none!important}
+.wrap{max-width:960px;margin:0 auto;padding:0 18px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:10px}
+.brand{font-weight:800;font-size:1.3rem}
+.nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.nav .btn{padding:8px 12px;font-size:.9rem}
+.btn{display:inline-block;border:0;border-radius:10px;background:var(--ink);color:var(--bg);font:inherit;font-weight:700;padding:10px 18px;cursor:pointer;text-decoration:none;text-align:center}
+.btn.alt{background:var(--yellow);color:#14213d}.btn.teal{background:var(--teal);color:#fff}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.layers{height:40px;border-radius:10px;margin:20px 0;background:repeating-linear-gradient(0deg,var(--teal) 0 5px,transparent 5px 9px);width:min(100%,300px)}
+h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1;margin:0 0 10px;font-weight:800}
+h2{font-size:1.6rem;margin:0 0 16px}
+.sub{color:var(--muted);max-width:46ch;font-size:1.1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;padding-bottom:90px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.pic{height:140px;display:grid;place-items:center;background:var(--bg)}.obj{width:86px;height:86px}
+.body{padding:14px;display:flex;flex-direction:column;gap:4px;flex:1}.body h3{margin:0}.body p{margin:0;color:var(--muted);flex:1;font-size:.95rem}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}.price{font-weight:800}
+#cartBtn{position:fixed;inset-inline-end:14px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;border-radius:999px;padding:12px 16px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#cnt{background:var(--pink);color:#fff;border-radius:999px;padding:0 8px;margin-inline-start:6px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:60px}
+.steps{display:flex;gap:6px;margin-bottom:16px}.steps i{flex:1;height:6px;border-radius:3px;background:var(--line)}.steps i.on{background:var(--teal)}
+label{display:grid;gap:4px;font-weight:700;margin-bottom:12px}
+input[type=text],input[type=tel],input[type=password],input[type=email]{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
+.phone{display:flex;gap:6px;direction:ltr}.phone span{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:700}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.qty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
+.qty b{display:inline-block;min-width:24px;text-align:center}
+.opt{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;font-weight:700}
+.opt small{display:block;font-weight:400;color:var(--muted)}
+.opt:has(input:checked){border-color:var(--teal)}
+.err{color:var(--pink);font-weight:700;min-height:1.5em}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.muted{color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;z-index:20;padding:18px}
+.mbox{background:var(--surface);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+select{font:inherit;padding:4px 8px;border-radius:8px;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">Layer Lab</div>
+    <div class="nav"><button class="btn ghost" id="accBtn"></button><button class="btn ghost" id="trackNav" data-t="track"></button><button class="btn ghost" id="langBtn"></button></div></div>
+
+  <section id="v-shop">
+    <div class="layers" aria-hidden="true"></div>
+    <h1 data-t="hero"></h1><p class="sub" data-t="heroSub"></p>
+    <h2 style="margin-top:28px" data-t="shop"></h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="v-flow" hidden>
+    <div class="panel">
+      <div class="steps" id="steps"><i></i><i></i><i></i><i></i></div>
+      <div id="s0"><h2 data-t="cart"></h2><div id="items"></div><p class="muted" id="empty" data-t="empty"></p>
+        <div class="actions"><button class="btn ghost" data-go="shop" data-t="more"></button><button class="btn teal" id="toS1" data-t="checkout"></button></div></div>
+      <div id="s1" hidden><h2 data-t="s1"></h2>
+        <label><span data-t="name"></span><input type="text" id="fName" autocomplete="name"></label>
+        <label><span data-t="phone"></span><div class="phone"><span>+971</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="10" placeholder="5XXXXXXXX" autocomplete="tel-national"></div></label>
+        <div class="err" id="e1" role="alert"></div>
+        <div class="actions"><button class="btn ghost" data-step="0" data-t="back"></button><button class="btn teal" id="toS2" data-t="next"></button></div></div>
+      <div id="s2" hidden><h2 data-t="s2"></h2>
+        <label><span data-t="city"></span><input type="text" id="fCity"></label>
+        <label><span data-t="area"></span><input type="text" id="fArea"></label>
+        <label><span data-t="house"></span><input type="text" id="fHouse"></label>
+        <label><span data-t="land"></span><input type="text" id="fLand"></label>
+        <div class="err" id="e2" role="alert"></div>
+        <div class="actions"><button class="btn ghost" data-step="1" data-t="back"></button><button class="btn teal" id="toS3" data-t="toPay"></button></div></div>
+      <div id="s3" hidden><h2 data-t="s3"></h2>
+        <label class="opt"><input type="radio" name="pay" value="cash" checked><span><span data-t="cash"></span><small data-t="cashN"></small></span></label>
+        <label class="opt"><input type="radio" name="pay" value="card"><span><span data-t="card"></span><small data-t="cardN"></small></span></label>
+        <div class="actions" style="margin:0 0 10px"><button class="btn ghost" id="offBtn" type="button"></button></div>
+        <div id="sum"></div>
+        <div class="err" id="e3" role="alert"></div>
+        <div class="actions"><button class="btn ghost" data-step="2" data-t="back"></button><a class="btn alt" id="send" target="_blank" rel="noopener" href="#" data-t="send"></a></div></div>
+      <div id="s4" hidden><h2 data-t="thanks"></h2><p id="orderNo" style="font-weight:800;font-size:1.3rem"></p><p id="thanksP"></p><p id="shot" class="muted"></p>
+        <div class="actions"><a class="btn teal" id="trackWa" target="_blank" rel="noopener" href="#" data-t="trackBtn"></a><button class="btn ghost" data-go="shop" data-t="home"></button></div></div>
+    </div>
+  </section>
+
+  <section id="v-track" hidden>
+    <div class="panel"><h2 data-t="track"></h2><p class="muted" data-t="trackP"></p>
+      <label><span data-t="orderNum"></span><input type="text" id="tNo" placeholder="LL-1234" dir="ltr"></label>
+      <div class="actions"><a class="btn teal" id="tGo" target="_blank" rel="noopener" href="#" data-t="trackBtn"></a><button class="btn ghost" data-go="shop" data-t="home"></button></div></div>
+  </section>
+</div>
+<div id="modal" class="modal" hidden><div class="mbox" role="dialog" aria-modal="true"><div id="mbody"></div></div></div>
+<button class="btn alt" id="cartBtn" hidden><span aria-hidden="true">🛒</span> <span data-t="cart"></span><span id="cnt">0</span></button>
+
+<script>
+var OWNER_WA="971503580311";
+var FEE=10;
+var P=[
+ {en:"Flexi dragon",ar:"تنين مرن",de:"A bendy dragon that wiggles.",da:"تنين يتحرك ويلتف، يُطبع قطعة واحدة.",p:30,a:"#00a6a6",b:"#14213d",r:"50% 50% 12px 12px"},
+ {en:"Phone stand",ar:"حامل جوال",de:"Holds your phone at the perfect angle.",da:"يثبّت جوالك بزاوية مناسبة.",p:25,a:"#e63e8b",b:"#ffc93c",r:"4px 40px 4px 4px"},
+ {en:"Name keychain",ar:"ميدالية اسم",de:"Your name, your colours.",da:"اسمك وألوانك أنت تختارها.",p:15,a:"#ffc93c",b:"#e63e8b",r:"999px"},
+ {en:"Cable holder",ar:"حامل أسلاك",de:"Keeps cables on your desk.",da:"يمنع الأسلاك من السقوط عن المكتب.",p:12,a:"#14213d",b:"#00a6a6",r:"12px 12px 40px 40px"},
+ {en:"Mini planter",ar:"أصيص صغير",de:"A small pot for a succulent.",da:"أصيص صغير لنبتة صبار.",p:28,a:"#00a6a6",b:"#ffc93c",r:"10px 10px 50% 50%"},
+ {en:"Pencil cup",ar:"حامل أقلام",de:"Chunky ridged desk cup.",da:"كوب مكتب بخطوط الطباعة.",p:22,a:"#e63e8b",b:"#14213d",r:"8px"}
+];
+var T={
+en:{hero:"Layer Lab",heroSub:"Fun and useful things I design and 3D print myself. Pick yours and I’ll print it.",shop:"Shop",add:"Add",cart:"Cart",empty:"Your cart is empty.",more:"Keep shopping",checkout:"Checkout",s1:"Your details",name:"Full name",phone:"Phone number",s2:"Where should we deliver?",city:"City",area:"Area",house:"House / building number",land:"Nearest landmark",s3:"Payment",cash:"Cash on delivery",cashN:"Pay when you get it",card:"Card",cardN:"I’ll send you a secure payment link on WhatsApp",back:"Back",next:"Next",toPay:"Go to payment",send:"Send order on WhatsApp",thanks:"Order sent!",thanksP:"Check WhatsApp. I’ll reply to confirm your order. If you chose card, I’ll send you the payment link there.",home:"Back to shop",track:"Track my order",trackP:"Type your order number and ask me about it on WhatsApp.",orderNum:"Order number",trackBtn:"Ask about my order",total:"Total",fee:"Delivery fee",e1:"Please type your name and a 9-digit phone number.",e2:"Please fill in every address field.",e0:"Add something first.",rm:"Remove",none:"Order number first.",offers:"Offers",offOn:"Offer",close:"Close",apply:"Apply",remove:"Remove",offTitle:"Offers",offNote:"You can use only one offer per order.",free:"Free delivery",freeD:"Order over AED 100: no delivery fee.",d18:"18% off",d18D:"Order over AED 170: 18% off your items.",addMore:"Add items to go over AED {n} to use this.",disc:"Discount (18%)",freeW:"Free",saveT:"Save your location?",saveP:"Next time we’ll fill in this address for you. It stays on this phone only.",yes:"Yes, save",no:"No, thanks",acct:"Log in / Sign up",hi:"Hi",pass:"Password",myAcc:"My account",orders:"Orders",st_wait:"Waiting for payment",st_prep:"Preparing",st_cancel:"Cancelled",markPaid:"Payment received",cancel:"Cancel order",giftPh:"Free gift (e.g. sticker)",addGift:"Add gift",thanksCard:"Thank you for your order! It is saved and waiting for payment. I’ll send you a secure payment link on WhatsApp, and your order is confirmed once I receive the payment.",shotP:"Please take a screenshot of this screen and keep your order code. You can use it to ask about your order.",welcome:"Welcome back,",ordHelp:"Paste an order message from WhatsApp. The site recalculates the real price from your price list, so a changed price is caught.",ordAdd:"Check and add",ordBad:"This doesn’t look like an order from the store (no order code found).",mismatch:"Message says AED {a}, real total is AED {b}",st_new:"New",st_paid:"Paid",st_done:"Delivered",del:"Delete",noOrd:"No orders yet.",email:"Email (optional)",myAddr:"Saved address",newPass:"New password (leave empty to keep the old one)",save:"Save",saved:"Saved ✓",badE:"Type a valid email.",passShort:"Password must be at least 6 characters.",wrongPass:"Wrong password.",reAcct:"Please create your account again to add a password.",noCrypto:"This browser can’t make a secure password. Try another browser.",exists:"An account already exists for this number. Log in instead.",forgot:"If you forget your password, create a new account.",login:"Log in",signup:"Create account",logout:"Log out",haveAcc:"I already have an account",noAcc:"I need to create an account",accNote:"Your account is saved on this phone only. It unlocks member offers.",memberP:"You can use member offers, like 18% off.",badP:"Type a 9-digit phone number.",noAcct:"No account for this number on this phone. Create one first.",needAcc:"Log in or create an account to use this offer.",autoFree:"Free delivery on orders over AED 100 (applied automatically)."},
+ar:{hero:"Layer Lab",heroSub:"أشياء ممتعة ومفيدة أصممها وأطبعها بنفسي بالطابعة ثلاثية الأبعاد. اختر ما يعجبك وسأطبعه لك.",shop:"المتجر",add:"أضف",cart:"السلة",empty:"السلة فارغة.",more:"تابع التسوق",checkout:"إتمام الطلب",s1:"بياناتك",name:"الاسم الكامل",phone:"رقم الهاتف",s2:"أين نوصّل الطلب؟",city:"المدينة",area:"المنطقة",house:"رقم البيت / المبنى",land:"أقرب معلم",s3:"الدفع",cash:"كاش عند الاستلام",cashN:"ادفع عند الاستلام",card:"بطاقة",cardN:"سأرسل لك رابط دفع آمن على واتساب",back:"رجوع",next:"التالي",toPay:"الانتقال إلى الدفع",send:"إرسال الطلب على واتساب",thanks:"تم إرسال الطلب!",thanksP:"افتح واتساب، وسأرد عليك لتأكيد الطلب. وإذا اخترت البطاقة سأرسل لك رابط الدفع هناك.",home:"العودة للمتجر",track:"تتبع طلبي",trackP:"اكتب رقم طلبك واسألني عنه في واتساب.",orderNum:"رقم الطلب",trackBtn:"اسأل عن طلبي",total:"المجموع",fee:"رسوم التوصيل",e1:"اكتب اسمك ورقم هاتف من 9 أرقام.",e2:"عبّئ كل خانات العنوان.",e0:"أضف منتجًا أولًا.",rm:"حذف",none:"اكتب رقم الطلب أولًا.",offers:"العروض",offOn:"العرض",close:"إغلاق",apply:"تفعيل",remove:"إلغاء",offTitle:"العروض",offNote:"يمكنك استخدام عرض واحد فقط لكل طلب.",free:"توصيل مجاني",freeD:"عند الطلب بأكثر من 100 درهم: بدون رسوم توصيل.",d18:"خصم 18%",d18D:"عند الطلب بأكثر من 170 درهم: خصم 18% على المنتجات.",addMore:"أضف منتجات لتتجاوز {n} درهم لاستخدام هذا العرض.",disc:"الخصم (18%)",freeW:"مجاني",saveT:"هل تريد حفظ موقعك؟",saveP:"في المرة القادمة سنكتب العنوان لك تلقائيًا. يبقى محفوظًا في هذا الجوال فقط.",yes:"نعم، احفظ",no:"لا، شكرًا",acct:"تسجيل دخول / إنشاء حساب",hi:"أهلًا",pass:"كلمة المرور",myAcc:"حسابي",orders:"الطلبات",st_wait:"بانتظار الدفع",st_prep:"قيد التجهيز",st_cancel:"ملغي",markPaid:"تم الدفع",cancel:"إلغاء الطلب",giftPh:"هدية مجانية (مثلًا ملصق)",addGift:"أضف هدية",thanksCard:"شكرًا لك على طلبك! طلبك محفوظ وبانتظار الدفع. سأرسل لك رابط دفع آمن على واتساب، ويتأكد طلبك بعد أن أستلم المبلغ.",shotP:"من فضلك صوّر هذه الشاشة واحتفظ بكود الطلب، تستطيع استخدامه لتسأل عن طلبك.",welcome:"أهلًا بعودتك،",ordHelp:"الصق رسالة الطلب من واتساب. الموقع يحسب السعر الحقيقي من قائمة أسعارك، فإذا غيّر الزبون السعر يظهر لك التحذير.",ordAdd:"افحص وأضف",ordBad:"هذه ليست رسالة طلب من المتجر، أو أن الكود ناقص.",mismatch:"الرسالة تقول {a} درهم، والمجموع الحقيقي {b} درهم",st_new:"جديد",st_paid:"مدفوع",st_done:"تم التوصيل",del:"حذف",noOrd:"لا توجد طلبات بعد.",email:"الإيميل (اختياري)",myAddr:"العنوان المحفوظ",newPass:"كلمة مرور جديدة (اتركها فارغة لإبقاء القديمة)",save:"حفظ",saved:"تم الحفظ ✓",badE:"اكتب إيميلًا صحيحًا.",passShort:"كلمة المرور 6 أحرف على الأقل.",wrongPass:"كلمة المرور غير صحيحة.",reAcct:"أنشئ حسابك من جديد لإضافة كلمة مرور.",noCrypto:"هذا المتصفح لا يستطيع إنشاء كلمة مرور آمنة. جرّب متصفحًا آخر.",exists:"يوجد حساب بهذا الرقم. سجّل دخولك بدل ذلك.",forgot:"إذا نسيت كلمة المرور، أنشئ حسابًا جديدًا.",login:"تسجيل دخول",signup:"إنشاء حساب",logout:"تسجيل خروج",haveAcc:"عندي حساب",noAcc:"أحتاج إنشاء حساب",accNote:"حسابك محفوظ في هذا الجوال فقط، ويفتح لك عروض الأعضاء.",memberP:"يمكنك استخدام عروض الأعضاء مثل خصم 18%.",badP:"اكتب رقم هاتف من 9 أرقام.",noAcct:"لا يوجد حساب لهذا الرقم في هذا الجوال. أنشئ حسابًا أولًا.",needAcc:"سجّل دخولك أو أنشئ حسابًا لاستخدام هذا العرض.",autoFree:"توصيل مجاني عند الطلب بأكثر من 100 درهم (يُطبّق تلقائيًا)."}
+};
+var lang=(navigator.language||"").slice(0,2)==="en"?"en":"ar";
+var cart={},step=0,orderNo="";
+function $(i){return document.getElementById(i)}
+function tr(k){return T[lang][k]}
+function money(n){return lang==="ar"?n+" درهم":"AED "+n}
+function pay(){return document.querySelector('input[name="pay"]:checked').value}
+function count(){var c=0;for(var k in cart)c+=cart[k];return c}
+function sub(){var t=0;for(var k in cart)t+=cart[k]*P[k].p;return t}
+var offer="",acct=null,logged=false;
+function r2(n){return Math.round(n*100)/100}
+function disc(){return offer==="d18"&&logged&&sub()>170?r2(sub()*0.18):0}
+function fee(){return sub()>100?0:FEE}
+function total(){return r2(sub()-disc()+fee())}
+function checkOffer(){if(offer==="d18"&&(sub()<=170||!logged))offer=""}
+function applyLang(){
+  document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.body.className=lang==="en"?"en":"";
+  document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=tr(e.getAttribute("data-t"))});
+  $("langBtn").textContent=lang==="ar"?"English":"العربية";
+  $("fPhone").dir="ltr";$("fName").placeholder="";
+  renderGrid();renderItems();renderSum();renderAcc();renderThanks();
+}
+function renderGrid(){
+  var g=$("grid");g.innerHTML="";
+  P.forEach(function(x,i){
+    var c=document.createElement("div");c.className="card";
+    c.innerHTML='<div class="pic"><div class="obj" style="border-radius:'+x.r+';background:repeating-linear-gradient(0deg,'+x.a+' 0 6px,'+x.b+' 6px 9px)"></div></div><div class="body"><h3>'+x[lang]+'</h3><p>'+(lang==="ar"?x.da:x.de)+'</p><div class="row"><span class="price">'+money(x.p)+'</span><button class="btn teal" data-add="'+i+'">'+tr("add")+'</button></div></div>';
+    g.appendChild(c);
+  });
+}
+function renderItems(){
+  var h="";
+  for(var k in cart){h+='<div class="li"><span>'+P[k][lang]+'<br><span class="muted">'+money(P[k].p)+'</span></span><span class="qty"><button data-q="'+k+'" data-d="-1" aria-label="-">−</button><b>'+cart[k]+'</b><button data-q="'+k+'" data-d="1" aria-label="+">+</button></span></div>';}
+  if(h)h+='<div class="li"><b>'+tr("total")+'</b><b>'+money(sub())+'</b></div>';
+  $("items").innerHTML=h;$("empty").hidden=!!h;
+  var n=count();$("cnt").textContent=n;$("cartBtn").hidden=!n&&$("v-shop").hidden;
+}
+function renderSum(){
+  var h="";
+  for(var k in cart)h+='<div class="li"><span>'+P[k][lang]+' × '+cart[k]+'</span><span>'+money(cart[k]*P[k].p)+'</span></div>';
+  checkOffer();
+  if(disc())h+='<div class="li"><span>'+tr("disc")+'</span><span>-'+money(disc())+'</span></div>';
+  h+='<div class="li"><span>'+tr("fee")+'</span><span>'+(fee()?money(fee()):tr("freeW"))+'</span></div>';
+  $("offBtn").textContent=offer?tr("offOn")+": "+tr(offer==="free"?"free":"d18")+" ✓":tr("offers");
+  h+='<div class="li"><b>'+tr("total")+'</b><b>'+money(total())+'</b></div>';
+  $("sum").innerHTML=h;
+}
+function view(v){["shop","flow","track"].forEach(function(n){$("v-"+n).hidden=n!==v});$("cartBtn").hidden=v!=="shop"||!count();window.scrollTo(0,0)}
+function goStep(n){
+  step=n;for(var i=0;i<5;i++)$("s"+i).hidden=i!==n;
+  var s=$("steps").children;for(var j=0;j<4;j++)s[j].className=j<=Math.min(n,3)?"on":"";
+  $("steps").hidden=n===4;
+  if(n===3){if(!orderNo)orderNo="LL-"+Math.floor(1000+Math.random()*9000);renderSum();refresh()}
+  window.scrollTo(0,0);
+}
+function phone(){var d=$("fPhone").value.replace(/\D/g,"");if(d.charAt(0)==="0")d=d.slice(1);return d}
+function msg(){
+  checkOffer();var p=pay(),a=lang==="ar",L=[];
+  L.push((a?"طلب جديد! ":"New order! ")+orderNo);
+  L.push((a?"الاسم: ":"Name: ")+$("fName").value.trim());
+  L.push((a?"الهاتف: +971 ":"Phone: +971 ")+phone());
+  if(logged)L.push(a?"عضو مسجّل في الموقع":"Registered member");
+  if(logged&&acct.e)L.push((a?"الإيميل: ":"Email: ")+acct.e);
+  L.push((a?"المدينة: ":"City: ")+$("fCity").value.trim());
+  L.push((a?"المنطقة: ":"Area: ")+$("fArea").value.trim());
+  L.push((a?"رقم البيت: ":"House: ")+$("fHouse").value.trim());
+  L.push((a?"أقرب معلم: ":"Landmark: ")+$("fLand").value.trim());
+  L.push(a?"الطلبات:":"Items:");
+  for(var k in cart)L.push("- "+P[k][lang]+" × "+cart[k]+" ("+money(cart[k]*P[k].p)+")");
+  L.push("Code: "+Object.keys(cart).map(function(k){return k+"x"+cart[k]}).join(";"));
+  if(p==="card")L.push(a?"الحالة: لم يُدفع بعد":"Status: NOT PAID YET");
+  if(p==="cash")L.push(a?"الدفع: كاش عند الاستلام":"Payment: Cash on delivery");
+  else L.push(a?"الدفع: بطاقة. أرسل لي رابط الدفع من فضلك":"Payment: Card. Please send me the payment link");
+  if(offer)L.push((a?"العرض: ":"Offer: ")+tr(offer==="free"?"free":"d18"));
+  L.push((a?"رسوم التوصيل: ":"Delivery fee: ")+money(fee()));
+  if(disc())L.push((a?"الخصم: -":"Discount: -")+money(disc()));
+  L.push((a?"المجموع: ":"Total: ")+money(total()));
+  return L.join("\n");
+}
+function refresh(){$("send").href="https://wa.me/"+OWNER_WA+"?text="+encodeURIComponent(msg())}
+function waTrack(no){return "https://wa.me/"+OWNER_WA+"?text="+encodeURIComponent((lang==="ar"?"مرحبا، أريد أن أعرف حالة طلبي رقم ":"Hi! What is the status of my order ")+no)}
+
+document.addEventListener("click",function(e){
+  var t=e.target.closest("button,a");if(!t)return;
+  if(t.hasAttribute("data-add")){var i=t.getAttribute("data-add");cart[i]=(cart[i]||0)+1;renderItems();return}
+  if(t.hasAttribute("data-q")){var k=t.getAttribute("data-q");cart[k]+=+t.getAttribute("data-d");if(cart[k]<=0)delete cart[k];renderItems();if(!count())goStep(0);return}
+  if(t.hasAttribute("data-go")){view(t.getAttribute("data-go"));return}
+  if(t.hasAttribute("data-step")){goStep(+t.getAttribute("data-step"));return}
+});
+$("cartBtn").onclick=function(){view("flow");goStep(0)};
+$("langBtn").onclick=function(){lang=lang==="ar"?"en":"ar";applyLang();if(step===3)refresh()};
+$("trackNav").onclick=function(){view("track")};
+$("toS1").onclick=function(){if(!count()){alert(tr("e0"));return}goStep(1)};
+$("toS2").onclick=function(){
+  if(!$("fName").value.trim()||phone().length!==9){$("e1").textContent=tr("e1");return}
+  $("e1").textContent="";goStep(2)};
+$("toS3").onclick=function(){
+  if(!$("fCity").value.trim()||!$("fArea").value.trim()||!$("fHouse").value.trim()||!$("fLand").value.trim()){$("e2").textContent=tr("e2");return}
+  $("e2").textContent="";askSave()};
+function locObj(){return {c:$("fCity").value.trim(),a:$("fArea").value.trim(),h:$("fHouse").value.trim(),l:$("fLand").value.trim()}}
+function savedLoc(){try{return JSON.parse(localStorage.getItem("ll_loc")||"null")}catch(e){return null}}
+function openModal(h){$("mbody").innerHTML=h;$("modal").hidden=false}
+function closeModal(){$("modal").hidden=true}
+function askSave(){
+  var s=savedLoc(),n=locObj();
+  if(s&&JSON.stringify(s)===JSON.stringify(n)){goStep(3);return}
+  openModal('<h2>'+tr("saveT")+'</h2><p class="muted">'+tr("saveP")+'</p><div class="actions"><button class="btn teal" id="mYes">'+tr("yes")+'</button><button class="btn ghost" id="mNo">'+tr("no")+'</button></div>');
+  $("mYes").onclick=function(){try{localStorage.setItem("ll_loc",JSON.stringify(n))}catch(e){}closeModal();goStep(3)};
+  $("mNo").onclick=function(){closeModal();goStep(3)};
+}
+function openOffers(){
+  checkOffer();var s=sub(),h='<h2>'+tr("offTitle")+'</h2><p class="muted">'+tr("offNote")+'</p><p>✓ '+tr("autoFree")+'</p>';
+  [["d18","d18D",170]].forEach(function(d){
+    var ok=s>d[2]&&logged,on=offer===d[0];
+    h+='<div class="opt" style="cursor:default"><span style="flex:1">'+tr(d[0])+'<small>'+tr(d[1])+(s>d[2]?'':'<br>'+tr("addMore").replace("{n}",d[2]))+(logged?'':'<br>'+tr("needAcc"))+'</small></span><button class="btn '+(on?'ghost':'teal')+'" data-o="'+d[0]+'"'+(ok?'':' disabled')+'>'+(on?tr("remove"):tr("apply"))+'</button></div>';
+  });
+  h+='<div class="actions">'+(logged?'':'<button class="btn teal" id="mLogin">'+tr("login")+'</button>')+'<button class="btn ghost" id="mClose">'+tr("close")+'</button></div>';
+  openModal(h);
+}
+$("offBtn").onclick=openOffers;
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function loadAcct(){try{acct=JSON.parse(localStorage.getItem("ll_acct")||"null");logged=localStorage.getItem("ll_in")==="1"&&!!acct}catch(e){acct=null;logged=false}}
+function renderAcc(){$("accBtn").textContent=logged?tr("hi")+" "+acct.n.split(" ")[0]:tr("acct")}
+function openAcc(mode){
+  if(logged){openModal('<h2>'+tr(isOwner()?"welcome":"hi")+' '+esc(acct.n)+'</h2><p class="muted" dir="ltr">+971 '+acct.p+'</p><p>'+tr("memberP")+'</p><div class="actions">'+(isOwner()?'<button class="btn alt" id="aOrders">'+tr("orders")+'</button>':'')+'<button class="btn teal" id="aEdit">'+tr("myAcc")+'</button><button class="btn ghost" id="aOut">'+tr("logout")+'</button><button class="btn ghost" id="mClose">'+tr("close")+'</button></div>');return}
+  mode=mode||"up";
+  var h='<button class="btn ghost" id="mClose" style="padding:6px 12px;margin-bottom:10px">'+(lang==="ar"?"→ ":"← ")+tr("back")+'</button><h2>'+tr(mode==="up"?"signup":"login")+'</h2>';
+  if(mode==="up")h+='<label><span>'+tr("name")+'</span><input type="text" id="aName"></label>';
+  h+='<label><span>'+tr("phone")+'</span><div class="phone"><span>+971</span><input type="tel" id="aPhone" inputmode="numeric" maxlength="10"></div></label><label><span>'+tr("pass")+'</span><input type="password" id="aPass" autocomplete="'+(mode==="up"?"new-password":"current-password")+'"></label><div class="err" id="aErr" role="alert"></div><div class="actions"><button class="btn teal" id="aGo" data-m="'+mode+'">'+tr(mode==="up"?"signup":"login")+'</button><button class="btn ghost" id="aSw">'+tr(mode==="up"?"haveAcc":"noAcc")+'</button></div><p class="muted">'+tr("accNote")+' '+tr("forgot")+'</p>';
+  openModal(h);
+}
+function hex(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join("")}
+function hashPw(pw,sh){
+  var salt=new Uint8Array(sh.match(/../g).map(function(h){return parseInt(h,16)}));
+  return crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]).then(function(k){
+    return crypto.subtle.deriveBits({name:"PBKDF2",salt:salt,iterations:100000,hash:"SHA-256"},k,256)}).then(hex);
+}
+async function authGo(m){
+  var err=$("aErr"),d=$("aPhone").value.replace(/\D/g,""),pw=$("aPass").value;
+  if(d.charAt(0)==="0")d=d.slice(1);
+  if(d.length!==9){err.textContent=tr("badP");return}
+  if(pw.length<6){err.textContent=tr("passShort");return}
+  try{
+    if(m==="up"){
+      var n=$("aName").value.trim();if(!n){err.textContent=tr("e1");return}
+      if(acct&&acct.p===d&&acct.h){err.textContent=tr("exists");return}
+      var s=hex(crypto.getRandomValues(new Uint8Array(16)));
+      acct={n:n,p:d,s:s,h:await hashPw(pw,s)};
+    }else{
+      if(!acct||acct.p!==d){err.textContent=tr("noAcct");return}
+      if(!acct.h){err.textContent=tr("reAcct");return}
+      if(await hashPw(pw,acct.s)!==acct.h){err.textContent=tr("wrongPass");return}
+    }
+  }catch(x){err.textContent=tr("noCrypto");return}
+  logged=true;try{localStorage.setItem("ll_acct",JSON.stringify(acct));localStorage.setItem("ll_in","1")}catch(x){}
+  if(!$("fName").value)$("fName").value=acct.n;if(!$("fPhone").value)$("fPhone").value=acct.p;
+  closeModal();renderAcc();renderSum();refresh();
+}
+var lastPay="cash";
+function renderThanks(){var c=lastPay==="card";$("thanksP").textContent=tr(c?"thanksCard":"thanksP");$("shot").textContent=c?"📸 "+tr("shotP"):""}
+function waBuyer(x){
+  var a=x.lang==="ar",t;
+  if(x.st==="paid")t=a?"طلبك "+x.no+": تم استلام الدفع بنجاح ✅ شكرًا لك! جاري تجهيز طلبك.":"Order "+x.no+": payment received successfully ✅ Thank you! Your order is being prepared.";
+  else if(x.st==="cancel")t=a?"طلبك "+x.no+" تم إلغاؤه.":"Your order "+x.no+" was cancelled.";
+  else if(x.st==="wait")t=a?"طلبك "+x.no+": هذا رابط الدفع للمبلغ "+x.real+" درهم:":"Order "+x.no+": here is your payment link for AED "+x.real+":";
+  else if(x.st==="done")t=a?"طلبك "+x.no+" تم توصيله. شكرًا لك!":"Order "+x.no+" was delivered. Thank you!";
+  else t=a?"طلبك "+x.no+" وصلنا ✅":"Order "+x.no+" received ✅";
+  if(x.gift)t+=(a?" 🎁 هدية مجانية: ":" 🎁 Free gift: ")+x.gift;
+  return "https://wa.me/971"+x.phone+"?text="+encodeURIComponent(t);
+}
+function isOwner(){return logged&&acct&&acct.p==="503580311"}
+function getOrders(){try{return JSON.parse(localStorage.getItem("ll_orders")||"[]")}catch(e){return[]}}
+function putOrders(o){try{localStorage.setItem("ll_orders",JSON.stringify(o))}catch(e){}}
+function parseOrder(m){
+  var c=m.match(/Code:\s*([\dx;]+)/);if(!c)return null;
+  var sub=0,items=[],ok=true;
+  c[1].split(";").forEach(function(t){var z=t.split("x"),i=+z[0],q=+z[1];if(!P[i]||!(q>0)||q>99||q%1){ok=false;return}sub+=P[i].p*q;items.push(P[i].en+" × "+q)});
+  if(!ok||!items.length)return null;
+  var mem=/Registered member|عضو مسجّل/.test(m),off=/Offer:|العرض:/.test(m);
+  var f=sub>100?0:FEE,d=(mem&&off&&sub>170)?r2(sub*0.18):0,real=r2(sub-d+f);
+  var g=function(re){var x=m.match(re);return x?x[1].trim():""};
+  var cl=g(/(?:Total|المجموع):\s*(?:AED\s*)?([\d.]+)/);
+  return {no:(m.match(/LL-\d+/)||[""])[0],name:g(/(?:Name|الاسم):\s*(.*)/),phone:g(/\+971\s*(\d+)/),pay:/Card|بطاقة/.test(m)?"Card":"Cash",items:items.join(", "),real:real,claimed:cl,bad:cl===""||Math.abs(+cl-real)>0.01,st:/Card|بطاقة/.test(m)?"wait":"new",gift:"",email:g(/(?:Email|الإيميل):\s*(\S+)/),city:g(/(?:City|المدينة):\s*(.*)/),area:g(/(?:Area|المنطقة):\s*(.*)/),house:g(/(?:House|رقم البيت):\s*(.*)/),land:g(/(?:Landmark|أقرب معلم):\s*(.*)/),lang:/[\u0600-\u06FF]/.test(m)?"ar":"en"};
+}
+function openOrders(){
+  var o=getOrders(),h='<button class="btn ghost" id="aBack" style="padding:6px 12px;margin-bottom:10px">'+(lang==="ar"?"→ ":"← ")+tr("back")+'</button><h2>'+tr("orders")+'</h2><p class="muted">'+tr("ordHelp")+'</p><textarea id="oPaste" rows="5" dir="auto" style="width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)"></textarea><div class="err" id="oErr" role="alert"></div><div class="actions"><button class="btn teal" id="oAdd">'+tr("ordAdd")+'</button></div>';
+  o.forEach(function(x,i){
+    h+='<div class="li" style="align-items:flex-start;flex-direction:column"><b>'+esc(x.no)+' · '+esc(x.name)+' · +971 '+esc(x.phone)+'</b><span>'+esc(x.items)+(x.gift?' 🎁 '+esc(x.gift):'')+'</span><span class="muted">'+esc([x.city,x.area,x.house,x.land].filter(Boolean).join(", "))+(x.email?' · '+esc(x.email):'')+'</span><span>'+esc(x.pay)+' · AED '+x.real+(x.bad?' <b style="color:var(--pink)">⚠ '+tr("mismatch").replace("{a}",esc(x.claimed||"?")).replace("{b}",x.real)+'</b>':'')+'</span><span><select data-st="'+i+'">'+["wait","new","paid","prep","done","cancel"].map(function(s){return '<option value="'+s+'"'+(x.st===s?' selected':'')+'>'+tr("st_"+s)+'</option>'}).join("")+'</select> <button class="btn teal" data-paid="'+i+'" style="padding:4px 10px">'+tr("markPaid")+'</button> <button class="btn ghost" data-cancel="'+i+'" style="padding:4px 10px">'+tr("cancel")+'</button> <button class="btn ghost" data-del="'+i+'" style="padding:4px 10px">'+tr("del")+'</button></span><span><input type="text" id="gift'+i+'" placeholder="'+tr("giftPh")+'" style="width:55%;padding:6px"> <button class="btn alt" data-gift="'+i+'" style="padding:4px 10px">'+tr("addGift")+'</button> <a class="btn ghost" target="_blank" rel="noopener" href="'+waBuyer(x)+'" style="padding:4px 10px">WhatsApp</a></span></div>';
+  });
+  if(!o.length)h+='<p class="muted">'+tr("noOrd")+'</p>';
+  openModal(h);
+}
+function addOrder(){var x=parseOrder($("oPaste").value);if(!x){$("oErr").textContent=tr("ordBad");return}var o=getOrders();o.unshift(x);putOrders(o);openOrders()}
+$("mbody").addEventListener("click",function(e){
+  var t=e.target,o=getOrders(),k;
+  if((k=t.getAttribute("data-del"))!==null){o.splice(+k,1)}
+  else if((k=t.getAttribute("data-paid"))!==null){o[+k].st="paid"}
+  else if((k=t.getAttribute("data-cancel"))!==null){o[+k].st="cancel"}
+  else if((k=t.getAttribute("data-gift"))!==null){var v=$("gift"+k).value.trim();if(!v)return;o[+k].gift=v}
+  else return;
+  putOrders(o);openOrders();
+});
+$("mbody").addEventListener("change",function(e){var s=e.target.getAttribute("data-st");if(s!==null){var o=getOrders();o[+s].st=e.target.value;putOrders(o);openOrders()}});
+function fld(id,label,val,type){return '<label><span>'+label+'</span><input type="'+(type||"text")+'" id="'+id+'" value="'+esc(val).split('"').join("&quot;")+'"></label>'}
+function openProfile(){
+  var s=savedLoc()||{c:"",a:"",h:"",l:""};
+  openModal('<button class="btn ghost" id="aBack" style="padding:6px 12px;margin-bottom:10px">'+(lang==="ar"?"→ ":"← ")+tr("back")+'</button><h2>'+tr("myAcc")+'</h2>'+
+    fld("pName",tr("name"),acct.n)+
+    '<label><span>'+tr("phone")+'</span><div class="phone"><span>+971</span><input type="tel" id="pPhone" inputmode="numeric" maxlength="10" value="'+acct.p+'"></div></label>'+
+    fld("pEmail",tr("email"),acct.e||"","email")+
+    '<h3>'+tr("myAddr")+'</h3>'+fld("pCity",tr("city"),s.c)+fld("pArea",tr("area"),s.a)+fld("pHouse",tr("house"),s.h)+fld("pLand",tr("land"),s.l)+
+    '<label><span>'+tr("newPass")+'</span><input type="password" id="pPass" autocomplete="new-password"></label>'+
+    '<div class="err" id="pErr" role="alert"></div><div class="actions"><button class="btn teal" id="pSave">'+tr("save")+'</button></div>');
+}
+async function saveProfile(){
+  var err=$("pErr"),n=$("pName").value.trim(),d=$("pPhone").value.replace(/\D/g,""),em=$("pEmail").value.trim(),pw=$("pPass").value;
+  err.style.color="";if(d.charAt(0)==="0")d=d.slice(1);
+  if(!n||d.length!==9){err.textContent=tr("e1");return}
+  if(em&&em.indexOf("@")<1){err.textContent=tr("badE");return}
+  if(pw&&pw.length<6){err.textContent=tr("passShort");return}
+  try{if(pw){var s=hex(crypto.getRandomValues(new Uint8Array(16)));acct.h=await hashPw(pw,s);acct.s=s}}catch(x){err.textContent=tr("noCrypto");return}
+  acct.n=n;acct.p=d;acct.e=em;
+  var loc={c:$("pCity").value.trim(),a:$("pArea").value.trim(),h:$("pHouse").value.trim(),l:$("pLand").value.trim()};
+  try{localStorage.setItem("ll_acct",JSON.stringify(acct));localStorage.setItem("ll_loc",JSON.stringify(loc))}catch(x){}
+  $("fName").value=n;$("fPhone").value=d;$("fCity").value=loc.c;$("fArea").value=loc.a;$("fHouse").value=loc.h;$("fLand").value=loc.l;
+  renderAcc();refresh();
+  err.style.color="var(--teal)";err.textContent=tr("saved");
+}
+$("modal").addEventListener("click",function(e){if(e.target.id==="modal")closeModal()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
+$("accBtn").onclick=function(){openAcc()};
+$("mbody").addEventListener("click",function(e){
+  var id=e.target.id;
+  if(id==="mLogin")openAcc("up");
+  else if(id==="aEdit")openProfile();
+  else if(id==="aBack")openAcc();
+  else if(id==="pSave")saveProfile();
+  else if(id==="aOrders")openOrders();
+  else if(id==="oAdd")addOrder();
+  else if(id==="aSw")openAcc($("aGo").getAttribute("data-m")==="up"?"in":"up");
+  else if(id==="aOut"){logged=false;try{localStorage.setItem("ll_in","0")}catch(x){}closeModal();renderAcc();renderSum();refresh()}
+  else if(id==="aGo"){authGo(e.target.getAttribute("data-m"))}
+});
+$("mbody").addEventListener("click",function(e){var o=e.target.getAttribute("data-o");if(o){offer=offer===o?"":o;closeModal();renderSum();refresh()}if(e.target.id==="mClose")closeModal()});
+document.querySelectorAll('input[name="pay"]').forEach(function(r){r.onchange=function(){renderSum();refresh()}});
+$("send").addEventListener("click",function(){
+  refresh();
+  setTimeout(function(){lastPay=pay();renderThanks();$("orderNo").textContent=tr("orderNum")+": "+orderNo;$("trackWa").href=waTrack(orderNo);cart={};renderItems();goStep(4);orderNo=""},400);
+});
+$("tNo").oninput=function(){$("tGo").href=waTrack($("tNo").value.trim())};
+$("tGo").addEventListener("click",function(e){if(!$("tNo").value.trim()){e.preventDefault();alert(tr("none"))}});
+loadAcct();var sv=savedLoc();if(sv){$("fCity").value=sv.c;$("fArea").value=sv.a;$("fHouse").value=sv.h;$("fLand").value=sv.l}
+applyLang();$("tGo").href=waTrack("");
+</script>
+</body>
+</html>
